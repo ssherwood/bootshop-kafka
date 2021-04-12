@@ -1,0 +1,84 @@
+
+### Credits:
+## - https://wurstmeister.github.io/kafka-docker/
+## - https://www.smartjava.org/content/setting-up-kafka-cluster-docker-copy/
+##
+## Wow, look at that old issue:  https://github.com/wurstmeister/kafka-docker/issues/100#issuecomment-225195630
+
+##
+## Basic Steps to Use:
+##
+## Update your /etc/hosts with your Docker host IP (ip a show docker0):
+##
+##   172.17.0.1 kafka1.test.local
+##   172.17.0.1 kafka2.test.local
+##   172.17.0.1 kafka3.test.local
+##
+## Map the KAFKA_DATA to a folder of your choosing
+##
+##  $ export KAFKA_DATA=$HOME/Repos/data/kafka
+##
+## Run the docker-compose command
+##
+##  $ docker-compose -f ./docker-compose-old.yml up -d
+##
+## Other helpful commands:
+##
+##  $ docker ps
+##
+##  $ docker logs -f <container-id>
+##
+
+version: '2'
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    volumes:
+      - ${KAFKA_DATA}/zookeeper/data:/opt/zookeeper-3.4.13/data  #kludge
+  kafka-1:
+    image: wurstmeister/kafka
+    ports:
+      - "9095:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka1.test.local
+      KAFKA_ADVERTISED_PORT: 9095
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LOG_DIRS: /kafka/logs
+      KAFKA_BROKER_ID: 500
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${KAFKA_DATA}/500:/kafka
+  kafka-2:
+    image: wurstmeister/kafka
+    ports:
+      - "9096:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka2.test.local
+      KAFKA_ADVERTISED_PORT: 9096
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LOG_DIRS: /kafka/logs
+      KAFKA_BROKER_ID: 501
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${KAFKA_DATA}/501:/kafka
+  kafka-3:
+    image: wurstmeister/kafka
+    ports:
+      - "9097:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka3.test.local
+      KAFKA_ADVERTISED_PORT: 9097
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LOG_DIRS: /kafka/logs
+      KAFKA_BROKER_ID: 502
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 3
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${KAFKA_DATA}/502:/kafka

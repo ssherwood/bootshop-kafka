@@ -1,0 +1,28 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: "demo-kafka-consumer"
+  kafka:
+    listener:
+      ack-mode: batch # this is the default
+      missing-topics-fatal: true
+    consumer:
+      # client-id: ${spring.application.name}
+      # group-id: ${spring.application.name}-group
+      auto-offset-reset: earliest
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.json.trusted.packages: "io.undertree.demo.kafka"
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
+
+wavefront:
+  application:
+    name: ssherwood-demo-kafka-app
+    service: ${spring.application.name}

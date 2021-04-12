@@ -1,0 +1,13 @@
+# Local configs only
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+spring:
+  kafka:
+    bootstrap-servers: kafka1.test.local:9192, kafka2.test.local:9292, kafka3.test.local:9392
